@@ -95,8 +95,6 @@ var
   i : integer;
   NumeroRegistros : Integer;
 begin
-  DataHoraInicial := Now;
-  ProgressBar1.Min := 1;
   with fDMConnection do
   begin
     ProgressBar1.Max := qryTabelas.RecordCount;
@@ -117,9 +115,7 @@ begin
 
         ProgressBar1.Position := ProgressBar1.Position + 1;
         vTabela := qryTabelasTABELAS.AsString;
-        QryDadosOrigem := Abrir_Tabela(tpOrigem);
         try
-          QryDadosDestino := Abrir_Tabela(tpDestino);
           Gauge1.MinValue := 1;
           pnlTop.Caption := 'Contando Registros ' + vTabela;
           pnlTop.Update;
@@ -130,37 +126,48 @@ begin
           end;
           pnlTop.Caption := 'Transferindo Registros da Tabela  ' + vTabela;
           pnlTop.Update;
-          while not QryDadosOrigem.Eof do
+          vSkip := 0;
+
+          while vSkip < NumeroRegistros  do
           begin
-            QryDadosDestino.Insert;
-            Gauge1.AddProgress(1);
-            Gauge1.Update;
-            for I := 0 to QryDadosOrigem.FieldCount - 1 do
+            QryDadosOrigem := Abrir_Tabela(tpOrigem);
+            QryDadosDestino := Abrir_Tabela(tpDestino);
+
+            while not QryDadosOrigem.Eof do
             begin
-              try
-                QryDadosDestino.FindField(QryDadosOrigem.Fields[i].FieldName).AsVariant :=
-                   QryDadosOrigem.Fields[i].AsVariant;
-              except
-                Application.ProcessMessages;
+              QryDadosDestino.Insert;
+              Gauge1.AddProgress(1);
+              Gauge1.Update;
+              QryDadosDestino.CachedUpdates := True;
+              for I := 0 to QryDadosOrigem.FieldCount - 1 do
+              begin
+                try
+                  QryDadosDestino.FindField(QryDadosOrigem.Fields[i].FieldName).AsVariant :=
+                     QryDadosOrigem.Fields[i].AsVariant;
+                except
+                  Application.ProcessMessages;
+                end;
+              end;
+              QryDadosDestino.Post;
+              QryDadosOrigem.Next;
+              if QryDadosDestino.ChangeCount >= 100 then
+              begin
+                QryDadosDestino.ApplyUpdates(0);
+                QryDadosDestino.CommitUpdates;
               end;
             end;
-            QryDadosDestino.Post;
-            QryDadosOrigem.Next;
-          end;
-          try
-            QryDadosDestino.CachedUpdates := True;
             QryDadosDestino.ApplyUpdates(0);
-          except
-            QryDadosDestino.Cancel;
-            Application.ProcessMessages;
+            QryDadosDestino.CommitUpdates;
+            Inc (vSkip,15000);
+            QryDadosOrigem.Free;
+            QryDadosDestino.Free;
           end;
-          QryDadosOrigem.Free;
-          QryDadosDestino.Free;
         except
           on E : Exception do
           begin
             ShowMessage(e.Message);
           end;
+
         end;
       end;
       qryTabelas.Next;

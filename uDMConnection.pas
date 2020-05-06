@@ -27,6 +27,7 @@ type
   public
     { Public declarations }
     vTabela : String;
+    vSkip : integer;
     ListaTipo : TStringList;
     function conectar : boolean;
     function Abrir_Tabela(Conexao: TEnumConexao) : TFDQuery;
@@ -55,7 +56,7 @@ begin
   end;
   Consulta.Close;
   Consulta.SQL.Clear;
-  Consulta.SQL.Add('SELECT * FROM ' + vTabela + ' WHERE 0=0 ');
+  Consulta.SQL.Add('SELECT first(15000) skip('+ IntToStr(vSkip) +') * FROM ' + vTabela + ' WHERE 0=0 ');
   Consulta.Open;
   Result := Consulta;
 end;
