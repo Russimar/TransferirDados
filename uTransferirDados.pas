@@ -77,6 +77,9 @@ end;
 
 procedure TfrmTransfereDados.btnTransferirClick(Sender: TObject);
 begin
+  btnTransferir.Enabled := False;
+  BitBtn1.Enabled := False;
+
   if fDMConnection.qryTabelas.IsEmpty then
   begin
     MessageDlg('Banco não conectado',mtWarning,[mbOK],0);
@@ -155,6 +158,7 @@ begin
                 QryDadosDestino.ApplyUpdates(0);
                 QryDadosDestino.CommitUpdates;
               end;
+              Application.ProcessMessages;
             end;
             QryDadosDestino.ApplyUpdates(0);
             QryDadosDestino.CommitUpdates;
@@ -179,6 +183,8 @@ begin
               'Terminou o Processo: ' + FormatDateTime('dd/mm/yyyy hh:mm:ss', DataHoraFinal)+ #13 +
               'Tempo duração: ' + FormatDateTime('hh:mm:ss', DataHoraInicial - DataHoraFinal));
 
+  btnTransferir.Enabled := True;
+  BitBtn1.Enabled := True;
 end;
 
 procedure TfrmTransfereDados.BitBtn1Click(Sender: TObject);
