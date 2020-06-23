@@ -220,7 +220,7 @@ object frmTransfereDados: TfrmTransfereDados
         OnClick = BitBtn1Click
       end
       object btnTransferir: TBitBtn
-        Left = 552
+        Left = 536
         Top = 17
         Width = 73
         Height = 64
