@@ -3,10 +3,28 @@ unit uTransferirDados;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.FileCtrl, Vcl.ExtCtrls,
-  Vcl.Buttons, uDMConnection, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls,
-  FireDAC.Comp.Client, Vcl.DBCGrids, SMDBGrid, Vcl.Samples.Gauges;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.FileCtrl,
+  Vcl.ExtCtrls,
+  Vcl.Buttons,
+  uDMConnection,
+  Data.DB,
+  Vcl.Grids,
+  Vcl.DBGrids,
+  Vcl.ComCtrls,
+  FireDAC.Comp.Client,
+  Vcl.DBCGrids,
+  SMDBGrid,
+  Vcl.Samples.Gauges;
 
 type
   TfrmTransfereDados = class(TForm)
@@ -25,20 +43,24 @@ type
     btnTransferir: TBitBtn;
     gridTabelas: TSMDBGrid;
     Gauge1: TGauge;
+    rdgTabela: TRadioGroup;
     procedure btnOrigemClick(Sender: TObject);
     procedure btnDestinoClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure btnTransferirClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure rdgTabelaClick(Sender: TObject);
   private
     { Private declarations }
-    BaseOrigem : String;
-    BaseDestino : String;
-    DataHoraInicial : TDateTime;
-    DataHoraFinal : TDateTime;
-    fDMConnection : TDMConnection;
-    QryDadosOrigem : TFDQuery;
-    QryDadosDestino : TFDQuery;
+    ctTabela : String;
+    BaseOrigem: String;
+    BaseDestino: String;
+    DataHoraInicial: TDateTime;
+    DataHoraFinal: TDateTime;
+    fDMConnection: TDMConnection;
+    QryDadosOrigem: TFDQuery;
+    QryDadosDestino: TFDQuery;
     procedure Transferir;
   public
     { Public declarations }
@@ -48,10 +70,10 @@ var
   frmTransfereDados: TfrmTransfereDados;
 
 const
-   DriverName : String = 'FB';
-   UserName   : String = 'SYSDBA';
-   PassWord   : String = 'masterkey';
-   IP         : String = '127.0.0.1';
+  DriverName: String = 'FB';
+  UserName: String = 'SYSDBA';
+  PassWord: String = 'masterkey';
+  IP: String = '127.0.0.1';
 
 implementation
 
@@ -82,21 +104,37 @@ begin
 
   if fDMConnection.qryTabelas.IsEmpty then
   begin
-    MessageDlg('Banco não conectado',mtWarning,[mbOK],0);
+    MessageDlg('Banco não conectado', mtWarning, [mbOK], 0);
     Exit;
   end;
   Transferir;
 end;
 
+procedure TfrmTransfereDados.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  fDMConnection.Free;
+end;
+
 procedure TfrmTransfereDados.FormCreate(Sender: TObject);
 begin
   fDMConnection := TDMConnection.Create(nil);
+  ctTabela := fDMConnection.qryTabelas.SQL.Text;
+end;
+
+procedure TfrmTransfereDados.rdgTabelaClick(Sender: TObject);
+begin
+  case rdgTabela.ItemIndex of
+    0 : fDMConnection.TipoTabela := tpSistema;
+    1 : fDMConnection.TipoTabela := tpGeral;
+    2 : fDMConnection.TipoTabela := tpTodas;
+  end;
 end;
 
 procedure TfrmTransfereDados.Transferir;
 var
-  i : integer;
-  NumeroRegistros : Integer;
+  i: integer;
+  NumeroRegistros: integer;
 begin
   with fDMConnection do
   begin
@@ -107,7 +145,7 @@ begin
     while not qryTabelas.Eof do
     begin
       if gridTabelas.SelectedRows.CurrentRowSelected then
-        begin
+      begin
         QryDadosOrigem := TFDQuery.Create(nil);
         QryDadosOrigem.Connection := fDMConnection.FDOrigem;
         QryDadosOrigem.FetchOptions.RowsetSize := 500;
@@ -131,7 +169,7 @@ begin
           pnlTop.Update;
           vSkip := 0;
 
-          while vSkip < NumeroRegistros  do
+          while vSkip < NumeroRegistros do
           begin
             QryDadosOrigem := Abrir_Tabela(tpOrigem);
             QryDadosDestino := Abrir_Tabela(tpDestino);
@@ -142,11 +180,11 @@ begin
               Gauge1.AddProgress(1);
               Gauge1.Update;
               QryDadosDestino.CachedUpdates := True;
-              for I := 0 to QryDadosOrigem.FieldCount - 1 do
+              for i := 0 to QryDadosOrigem.FieldCount - 1 do
               begin
                 try
-                  QryDadosDestino.FindField(QryDadosOrigem.Fields[i].FieldName).AsVariant :=
-                     QryDadosOrigem.Fields[i].AsVariant;
+                  QryDadosDestino.FindField(QryDadosOrigem.Fields[i].FieldName).AsVariant
+                    := QryDadosOrigem.Fields[i].AsVariant;
                 except
                   Application.ProcessMessages;
                 end;
@@ -162,14 +200,14 @@ begin
             end;
             QryDadosDestino.ApplyUpdates(0);
             QryDadosDestino.CommitUpdates;
-            Inc (vSkip,15000);
+            Inc(vSkip, 15000);
             QryDadosOrigem.Free;
             QryDadosDestino.Free;
           end;
         except
-          on E : Exception do
+          on E: Exception do
           begin
-            ShowMessage(e.Message);
+            ShowMessage(E.Message);
           end;
 
         end;
@@ -179,9 +217,10 @@ begin
   end;
   fDMConnection.qryTabelas.EnableControls;
   DataHoraFinal := Now;
-  ShowMessage('Iniciou o processo: '   +  FormatDateTime('dd/mm/yyyy hh:mm:ss',DataHoraInicial)+ #13 +
-              'Terminou o Processo: ' + FormatDateTime('dd/mm/yyyy hh:mm:ss', DataHoraFinal)+ #13 +
-              'Tempo duração: ' + FormatDateTime('hh:mm:ss', DataHoraInicial - DataHoraFinal));
+  ShowMessage('Iniciou o processo: ' + FormatDateTime('dd/mm/yyyy hh:mm:ss',
+    DataHoraInicial) + #13 + 'Terminou o Processo: ' +
+    FormatDateTime('dd/mm/yyyy hh:mm:ss', DataHoraFinal) + #13 + 'Tempo duração: ' +
+    FormatDateTime('hh:mm:ss', DataHoraInicial - DataHoraFinal));
 
   btnTransferir.Enabled := True;
   BitBtn1.Enabled := True;
@@ -189,10 +228,35 @@ end;
 
 procedure TfrmTransfereDados.BitBtn1Click(Sender: TObject);
 begin
-  if fDMConnection.conectar then
+  with fDMConnection do
   begin
-    fDMConnection.qryTabelas.Close;
-    fDMConnection.qryTabelas.Open;
+    qryTabelas.SQL.Text := ctTabela;
+    case TipoTabela of
+      tpSistema:
+      begin
+        qryTabelas.SQL.Add('and substring(RDB$RELATION_NAME from 1 for 6) = ' + QuotedStr('CONFIG'));
+        qryTabelas.SQL.Add('or substring(RDB$RELATION_NAME from 1 for 7) = ' + QuotedStr('EMPRESA'));
+        qryTabelas.SQL.Add('or substring(RDB$RELATION_NAME from 1 for 8) = ' + QuotedStr('TERMINAL'));
+        qryTabelas.SQL.Add('or substring(RDB$RELATION_NAME from 1 for 11) = ' + QuotedStr('CSTCONVERTE'));
+        qryTabelas.SQL.Add('or substring(RDB$RELATION_NAME from 1 for 8) = ' + QuotedStr('TERMINAL'));
+      end;
+      tpGeral:
+      begin
+        qryTabelas.SQL.Add('and substring(RDB$RELATION_NAME from 1 for 6) <> ' + QuotedStr('CONFIG'));
+        qryTabelas.SQL.Add('and substring(RDB$RELATION_NAME from 1 for 7) <> ' + QuotedStr('EMPRESA'));
+        qryTabelas.SQL.Add('and substring(RDB$RELATION_NAME from 1 for 8) <> ' + QuotedStr('TERMINAL'));
+        qryTabelas.SQL.Add('and substring(RDB$RELATION_NAME from 1 for 11) <> ' + QuotedStr('CSTCONVERTE'));
+        qryTabelas.SQL.Add('and substring(RDB$RELATION_NAME from 1 for 8) <> ' + QuotedStr('TERMINAL'));
+      end;
+    end;
+
+    fDMConnection.qryTabelas.SQL.Add('order by RDB$RELATION_NAME');
+
+    if conectar then
+    begin
+      qryTabelas.Close;
+      qryTabelas.Open;
+    end;
   end;
 end;
 

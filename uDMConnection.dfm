@@ -37,7 +37,7 @@ object DMConnection: TDMConnection
       'where ((RDB$SYSTEM_FLAG = 0) or (RDB$SYSTEM_FLAG is null)) and'
       '      (RDB$VIEW_SOURCE is null) and'
       'substring(RDB$RELATION_NAME from 1 for 3) <> '#39'FR_'#39' '
-      'order by RDB$RELATION_NAME ')
+      '')
     Left = 272
     Top = 32
     object qryTabelasTABELAS: TStringField

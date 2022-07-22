@@ -88,6 +88,7 @@
         <DCC_DcuOutput>C:\Projetos\Exec\DCU</DCC_DcuOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_UnitSearchPath>C:\Componentes Rio\smcmpnt\SOURCES;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -139,6 +140,10 @@
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k260.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp260.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="C:\ACBr\Lib\Delphi\LibD26\Win32\DCLACBr_NFeDanfeRL.bpl">ACBr - (design-time) DANFe em Fortes Report - (http://www.projetoacbr.com.br/)</Excluded_Packages>
+                    <Excluded_Packages Name="C:\ACBr\Lib\Delphi\LibD26\Win32\DCLACBr_NFSeDanfseRL.bpl">ACBr - (design-time) DANFSe em Fortes Report - (http://www.projetoacbr.com.br/)</Excluded_Packages>
+                    <Excluded_Packages Name="C:\ACBr\Lib\Delphi\LibD26\Win32\DCLACBr_NFSeXDanfseRL.bpl">ACBr - (design-time) DANFSe X em Fortes Report - (http://www.projetoacbr.com.br/)</Excluded_Packages>
+                    <Excluded_Packages Name="C:\ACBr\Lib\Delphi\LibD26\Win32\DCLACBr_BoletoRL.bpl">ACBr - (design-time) Boleto Impressão em Fortes Report - (http://www.projectoacbr.com.br/)</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">

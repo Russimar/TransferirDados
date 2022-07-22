@@ -12,6 +12,7 @@ object frmTransfereDados: TfrmTransfereDados
   Font.Style = []
   OldCreateOrder = False
   Position = poDesigned
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -56,7 +57,7 @@ object frmTransfereDados: TfrmTransfereDados
       TabOrder = 1
       object Label1: TLabel
         Left = 10
-        Top = 3
+        Top = 5
         Width = 70
         Height = 13
         Caption = 'Banco Origem:'
@@ -70,7 +71,7 @@ object frmTransfereDados: TfrmTransfereDados
       end
       object btnOrigem: TSpeedButton
         Left = 397
-        Top = 16
+        Top = 18
         Width = 30
         Height = 27
         Glyph.Data = {
@@ -197,7 +198,7 @@ object frmTransfereDados: TfrmTransfereDados
         OnClick = btnDestinoClick
       end
       object edtOrigem: TEdit
-        Left = 8
+        Left = 4
         Top = 19
         Width = 387
         Height = 21
@@ -220,13 +221,27 @@ object frmTransfereDados: TfrmTransfereDados
         OnClick = BitBtn1Click
       end
       object btnTransferir: TBitBtn
-        Left = 552
+        Left = 523
         Top = 17
         Width = 73
         Height = 64
         Caption = 'Transferir'
         TabOrder = 3
         OnClick = btnTransferirClick
+      end
+      object rdgTabela: TRadioGroup
+        Left = 602
+        Top = 14
+        Width = 111
+        Height = 67
+        Caption = 'Tabelas'
+        ItemIndex = 2
+        Items.Strings = (
+          'Sistema'
+          'Em Geral'
+          'Todas')
+        TabOrder = 4
+        OnClick = rdgTabelaClick
       end
     end
     object ProgressBar1: TProgressBar
@@ -280,7 +295,7 @@ object frmTransfereDados: TfrmTransfereDados
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Firebird|*.fdb|Interbase|*.gdb'
-    Left = 680
-    Top = 64
+    Left = 536
+    Top = 8
   end
 end
